@@ -48,11 +48,11 @@ export function AppLayout() {
       </div>
 
       {/* Main content */}
-      <motion.div
-        initial={false}
-        animate={{ marginInlineStart: collapsed ? 72 : 260 }}
-        transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-        className="min-h-screen flex flex-col"
+      <div
+        className={cn(
+          'min-h-screen flex flex-col transition-[margin-inline-start] duration-300 ease-out',
+          collapsed ? 'lg:ms-[72px]' : 'lg:ms-[260px]'
+        )}
       >
         <Navbar />
         <main className="flex-1 p-4 lg:p-6">
@@ -64,7 +64,7 @@ export function AppLayout() {
             <Outlet />
           </motion.div>
         </main>
-      </motion.div>
+      </div>
     </div>
   )
 }

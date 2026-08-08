@@ -159,7 +159,7 @@ export function OrdersPage() {
         icon={ShoppingBag}
         breadcrumbs={[t('nav.dashboard'), t('nav.orders')]}
         actions={
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Tabs value={viewType} onValueChange={setViewType}>
               <TabsList>
                 <TabsTrigger value="kanban"><LayoutGrid className="h-4 w-4 me-1" />{t('orders.kanban')}</TabsTrigger>

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  Search, Moon, Sun, Globe, Bell, Menu, ChevronDown, User, Settings, LogOut, Building2
+  Moon, Sun, Globe, Bell, Menu, ChevronDown, User, Settings, LogOut, Building2
 } from 'lucide-react'
 import { useTheme } from '@/context/ThemeContext'
 import { useSidebar } from '@/context/SidebarContext'
@@ -83,18 +83,6 @@ export function Navbar() {
       </Button>
 
       {/* Search */}
-      <button
-        onClick={() => navigate('/search')}
-        className="flex items-center gap-2 rounded-xl border bg-muted/50 px-3 py-2 text-sm text-muted-foreground hover:bg-muted transition-all duration-200 flex-1 max-w-md"
-      >
-        <Search className="h-4 w-4" />
-        <span>{t('search.placeholder')}</span>
-        <kbd className="pointer-events-none ms-auto inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 text-[10px] font-medium text-muted-foreground">
-          <span className="text-xs">Ctrl</span>
-          <span className="text-xs">K</span>
-        </kbd>
-      </button>
-
       <div className="flex items-center gap-1 ms-auto">
         {isManager && currentBranch && (
           <Badge variant="secondary" className="gap-1.5 me-1 hidden sm:inline-flex">
@@ -164,7 +152,7 @@ export function Navbar() {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -10, scale: 0.95 }}
                 transition={{ duration: 0.15 }}
-                className="absolute end-0 top-full mt-2 w-80 rounded-xl border bg-popover shadow-xl z-50 overflow-hidden"
+                className="absolute end-0 top-full mt-2 w-80 max-w-[calc(100vw-2rem)] rounded-xl border bg-popover shadow-xl z-50 overflow-hidden"
               >
                 <div className="flex items-center justify-between p-4 border-b">
                   <h3 className="font-semibold text-sm">{t('nav.notifications')}</h3>

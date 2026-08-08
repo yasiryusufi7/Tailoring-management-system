@@ -39,8 +39,8 @@ function InvoicePreview({ invoice, customer, order, onClose }) {
   return (
     <div className="max-w-2xl mx-auto bg-white text-gray-900 rounded-xl shadow-2xl overflow-hidden print:shadow-none print:rounded-none">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-8">
-        <div className="flex items-start justify-between">
+      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-6 sm:p-8">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
           <div>
             <div className="flex items-center gap-3 mb-2">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm">
@@ -62,8 +62,8 @@ function InvoicePreview({ invoice, customer, order, onClose }) {
       </div>
 
       {/* Invoice Details */}
-      <div className="p-8">
-        <div className="grid grid-cols-2 gap-8 mb-8">
+      <div className="p-6 sm:p-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 mb-8">
           <div>
             <h4 className="text-xs font-semibold uppercase text-gray-500 mb-2">{t('invoices.billTo')}</h4>
             <p className="text-lg font-semibold">{customer?.name || t('invoices.customer')}</p>
@@ -71,7 +71,7 @@ function InvoicePreview({ invoice, customer, order, onClose }) {
             <p className="text-sm text-gray-600">{customer?.phone || ''}</p>
             <p className="text-sm text-gray-600">{customer?.address || ''}</p>
           </div>
-          <div className="text-end">
+          <div className="text-start sm:text-end">
             <div className="space-y-2">
               <div>
                 <span className="text-xs font-semibold uppercase text-gray-500">{t('invoices.invoiceDateLabel')} </span>
@@ -139,13 +139,13 @@ function InvoicePreview({ invoice, customer, order, onClose }) {
 
         {/* Footer */}
         <div className="mt-8 pt-6 border-t border-gray-200">
-          <div className="grid grid-cols-2 gap-4 text-xs text-gray-500">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs text-gray-500">
             <div>
               <h5 className="font-semibold text-gray-700 mb-1">{t('invoices.paymentTerms')}</h5>
               <p>{t('invoices.paymentTermsNote')}</p>
               <p>{t('invoices.paymentMethods')}</p>
             </div>
-            <div className="text-end">
+            <div className="text-start sm:text-end">
               <h5 className="font-semibold text-gray-700 mb-1">{t('invoices.thankYou')}</h5>
               <p>{t('invoices.thankYouNote')}</p>
               <p className="mt-1">{t('invoices.footerTagline')}</p>

@@ -74,7 +74,7 @@ export function Sidebar() {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 py-3 px-2">
+        <nav className="flex-1 min-h-0 overflow-y-auto lg:overflow-visible py-3 px-2 scrollbar-thin">
           <ul className="space-y-0.5">
             {visibleItems.map((item, i) => {
               if (item.type === 'divider') {
@@ -142,7 +142,7 @@ export function Sidebar() {
         <button
           onClick={toggle}
           className={cn(
-            'absolute -end-3 top-20 flex h-6 w-6 items-center justify-center rounded-full border bg-background shadow-md hover:shadow-lg transition-all duration-200 z-50'
+            'hidden lg:flex absolute -end-3 top-20 h-6 w-6 items-center justify-center rounded-full border bg-background shadow-md hover:shadow-lg transition-all duration-200 z-50'
           )}
         >
           <motion.div animate={{ rotate: collapsed ? 180 : 0 }} transition={{ duration: 0.3 }}>

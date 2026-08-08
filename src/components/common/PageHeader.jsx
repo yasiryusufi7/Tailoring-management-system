@@ -23,7 +23,7 @@ export function PageHeader({ title, subtitle, breadcrumbs = [], actions, icon: I
           ))}
         </div>
       )}
-      <div className="flex items-start justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex items-center gap-3">
           {Icon && (
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
@@ -31,11 +31,11 @@ export function PageHeader({ title, subtitle, breadcrumbs = [], actions, icon: I
             </div>
           )}
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight">{title}</h1>
             {subtitle && <p className="text-muted-foreground mt-1">{subtitle}</p>}
           </div>
         </div>
-        {actions && <div className="flex items-center gap-2">{actions}</div>}
+        {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
       </div>
     </motion.div>
   )

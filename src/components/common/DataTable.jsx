@@ -39,20 +39,20 @@ export function DataTable({ columns, data, searchPlaceholder, pageSize = 10 }) {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <Input
           placeholder={searchPlaceholder || t('common.search') + '...'}
           value={search}
           onChange={(e) => { setSearch(e.target.value); setCurrentPage(1) }}
-          className="max-w-sm"
+          className="w-full sm:max-w-sm"
         />
         <p className="text-sm text-muted-foreground">
           {t('common.showing')} {startIndex + 1}-{Math.min(startIndex + pageSize, sortedData.length)} {t('common.of')} {sortedData.length} {t('common.entries')}
         </p>
       </div>
 
-      <div className="rounded-xl border overflow-hidden">
-        <table className="w-full">
+      <div className="rounded-xl border overflow-x-auto">
+        <table className="w-full min-w-[640px]">
           <thead>
             <tr className="border-b bg-muted/50">
               {columns.map((col) => (
@@ -91,7 +91,7 @@ export function DataTable({ columns, data, searchPlaceholder, pageSize = 10 }) {
       </div>
 
       {totalPages > 1 && (
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-muted-foreground">
             {t('common.page')} {currentPage} {t('common.of')} {totalPages}
           </p>
