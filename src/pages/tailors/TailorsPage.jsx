@@ -1,27 +1,49 @@
 import { useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
-import { Scissors, Plus, Star, DollarSign, Clock, TrendingUp, AlertTriangle } from 'lucide-react'
+import { Scissors, Plus, Star, DollarSign, Clock, TrendingUp, AlertTriangle, Building2, LayoutGrid, List } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { PageHeader } from '@/components/common/PageHeader'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { Avatar } from '@/components/ui/Avatar'
+import { DataTable } from '@/components/common/DataTable'
 import { TailorForm } from '@/components/forms/TailorForm'
 import { useBranchScope } from '@/hooks/useBranchScope'
+import { useAuth } from '@/context/AuthContext'
 import { useOrders } from '@/data/orderStore'
-import { tailors as seedTailors } from '@/data/mockData'
+import { tailors as seedTailors, branches } from '@/data/mockData'
 
 const ACTIVE_STATUSES = ['received', 'assigned', 'cutting', 'stitching', 'ironing']
 
 export function TailorsPage() {
   const { t } = useTranslation()
   const { scoped } = useBranchScope()
-  const tailors = scoped(seedTailors)
+  const { isAdmin } = useAuth()
+  const [tailorList, setTailorList] = useState(seedTailors)
+  const tailors = scoped(tailorList)
   const orders = scoped(useOrders())
   const [hoveredId, setHoveredId] = useState(null)
   const [formOpen, setFormOpen] = useState(false)
+  const [view, setView] = useState('list')
+
+  const handleSaveTailor = (data) => {
+    setTailorList((prev) => [
+      ...prev,
+      {
+        ...data,
+        id: Date.now(),
+        rating: 0,
+        completed: 0,
+        pendingPayment: 0,
+        joinedDate: new Date().toISOString().slice(0, 10),
+      },
+    ])
+  }
+
+  const getBranchName = (id) =>
+    branches.find((b) => b.id === id)?.name || '—'
 
   const today = new Date().toISOString().slice(0, 10)
 
@@ -85,6 +107,68 @@ export function TailorsPage() {
     return stars
   }
 
+  const listColumns = [
+    { key: 'name', label: t('tailors.name'), render: (val, row) => (
+      <div className="flex items-center gap-3">
+        <Avatar alt={val} size="sm" />
+        <div>
+          <p className="font-medium">{val}</p>
+          <p className="text-xs text-muted-foreground">{row.specialization}</p>
+        </div>
+      </div>
+    )},
+    ...(isAdmin ? [{
+      key: 'branchId',
+      label: t('forms.branch'),
+      render: (val) => (
+        <Badge variant="outline" className="text-xs">
+          <Building2 className="h-3 w-3 me-1" />
+          {getBranchName(val)}
+        </Badge>
+      ),
+    }] : []),
+    { key: 'rating', label: t('tailors.rating'), sortable: false, render: (val) => (
+      <div className="flex items-center gap-1">
+        {renderStars(val)}
+        <span className="text-xs font-medium text-muted-foreground ms-1">{val}</span>
+      </div>
+    )},
+    { key: 'dailyProduction', label: t('tailors.dailyProduction'), render: (val) => (
+      <span>{val} <span className="text-xs text-muted-foreground">{t('tailors.pieces')}</span></span>
+    )},
+    { key: 'active', label: t('tailorWork.activeOrders'), sortable: false, render: (_, row) => {
+      const s = statsByTailor[row.id] || {}
+      return (
+        <div className="flex items-center gap-1.5">
+          <Badge variant="secondary" className="text-xs">{s.active || 0}</Badge>
+          {s.overdue > 0 && (
+            <Badge variant="destructive" className="text-[10px] gap-0.5">
+              <AlertTriangle className="h-3 w-3" />
+              {s.overdue}
+            </Badge>
+          )}
+        </div>
+      )
+    }},
+    { key: 'ready', label: t('orders.statuses.ready'), sortable: false, render: (_, row) => (
+      <span>{statsByTailor[row.id]?.ready || 0}</span>
+    )},
+    { key: 'delivered', label: t('orders.statuses.delivered'), sortable: false, render: (_, row) => (
+      <span>{statsByTailor[row.id]?.delivered || 0}</span>
+    )},
+    { key: 'backlog', label: t('tailors.workload'), sortable: false, render: (_, row) => {
+      const s = statsByTailor[row.id] || {}
+      return (
+        <span className={`text-sm ${s.overdue > 0 ? 'text-red-600 font-medium' : ''}`}>
+          {s.active > 0 ? t('tailors.backlog', { count: s.backlogDays }) : t('tailors.noWork')}
+        </span>
+      )
+    }},
+    { key: 'monthlyWage', label: t('tailors.monthlyWage'), render: (val) => (
+      <span className="font-medium">PKR {val.toLocaleString()}</span>
+    )},
+  ]
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -93,10 +177,15 @@ export function TailorsPage() {
         icon={Scissors}
         breadcrumbs={[t('nav.dashboard', 'Dashboard'), t('nav.tailors', 'Tailors')]}
         actions={
-          <Button onClick={() => setFormOpen(true)}>
-            <Plus className="h-4 w-4" />
-            {t('tailors.addTailor', 'Add Tailor')}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" onClick={() => setView(view === 'list' ? 'grid' : 'list')}>
+              {view === 'list' ? <LayoutGrid className="h-4 w-4" /> : <List className="h-4 w-4" />}
+            </Button>
+            <Button onClick={() => setFormOpen(true)}>
+              <Plus className="h-4 w-4" />
+              {t('tailors.addTailor', 'Add Tailor')}
+            </Button>
+          </div>
         }
       />
 
@@ -174,7 +263,8 @@ export function TailorsPage() {
         </Card>
       </motion.div>
 
-      {/* Tailor Cards Grid */}
+      {/* Tailors: list (default) or cards */}
+      {view === 'grid' ? (
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
         {tailors.map((tailor, i) => {
           const stats = statsByTailor[tailor.id] || { active: 0, ready: 0, delivered: 0, overdue: 0, backlogDays: 0 }
@@ -207,9 +297,15 @@ export function TailorsPage() {
                             <Badge variant="info" className="text-[10px]">{tailor.specialization}</Badge>
                           </div>
                         </div>
-                        <div className="flex items-center gap-1 mt-1">
+                        <div className="flex items-center gap-1 mt-1 flex-wrap">
                           {renderStars(tailor.rating)}
                           <span className="text-xs font-medium text-muted-foreground ms-1">{tailor.rating}</span>
+                          {isAdmin && (
+                            <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground ms-auto">
+                              <Building2 className="h-3 w-3" />
+                              {getBranchName(tailor.branchId)}
+                            </span>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -283,8 +379,11 @@ export function TailorsPage() {
           )
         })}
       </div>
+      ) : (
+        <DataTable columns={listColumns} data={tailors} searchPlaceholder={t('tailors.search')} />
+      )}
 
-      <TailorForm open={formOpen} onOpenChange={setFormOpen} />
+      <TailorForm open={formOpen} onOpenChange={setFormOpen} onSave={handleSaveTailor} />
     </div>
   )
 }

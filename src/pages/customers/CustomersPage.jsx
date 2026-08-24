@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
-import { Users, Plus, Search, Phone, Mail, MapPin, ShoppingBag, Ruler, Eye, Edit, Trash2, QrCode, Filter, Grid, List } from 'lucide-react'
+import { Users, Plus, Search, Phone, Mail, MapPin, ShoppingBag, Ruler, Eye, Edit, Trash2, QrCode, Filter, Grid, List, Building2 } from 'lucide-react'
 import { PageHeader } from '@/components/common/PageHeader'
 import { Card, CardContent } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
@@ -15,11 +15,13 @@ import { MeasurementUpdateForm } from '@/components/forms/MeasurementUpdateForm'
 import { CustomerDetailsModal } from '@/components/common/CustomerDetailsModal'
 import { CustomerQrModal } from '@/components/common/CustomerQrModal'
 import { useBranchScope } from '@/hooks/useBranchScope'
-import { customers as seedCustomers, orders as seedOrders, measurements as seedMeasurements } from '@/data/mockData'
+import { customers as seedCustomers, orders as seedOrders, measurements as seedMeasurements, branches } from '@/data/mockData'
+import { useAuth } from '@/context/AuthContext'
 
 export function CustomersPage() {
   const { t } = useTranslation()
   const { scoped, branchId } = useBranchScope()
+  const { isAdmin } = useAuth()
 
   const [customers, setCustomers] = useState(seedCustomers)
   const [measurements, setMeasurements] = useState(seedMeasurements)
@@ -42,6 +44,9 @@ export function CustomersPage() {
       .filter((m) => m.customerId === customerId)
       .sort((a, b) => (a.date < b.date ? 1 : -1))[0]
 
+  const getBranchName = (id) =>
+    branches.find((b) => b.id === id)?.name || '—'
+
   const handleSaveCustomer = (data) => {
     if (editingCustomer) {
       setCustomers((prev) =>
@@ -56,7 +61,7 @@ export function CustomersPage() {
           totalOrders: 0,
           lastVisit: new Date().toISOString().slice(0, 10),
           balance: 0,
-          branchId: branchId || null,
+          branchId: data.branchId ?? branchId ?? null,
         },
       ])
     }
@@ -102,6 +107,16 @@ export function CustomersPage() {
   }
 
   const columns = [
+    ...(isAdmin ? [{
+      key: 'branchId',
+      label: t('forms.branch'),
+      render: (val) => (
+        <Badge variant="outline" className="text-xs">
+          <Building2 className="h-3 w-3 me-1" />
+          {getBranchName(val)}
+        </Badge>
+      ),
+    }] : []),
     { key: 'name', label: t('customers.name'), render: (val, row) => (
       <div className="flex items-center gap-3">
         <Avatar alt={val} size="sm" />
@@ -207,6 +222,11 @@ export function CustomersPage() {
                     <div className="flex items-center gap-2 text-muted-foreground">
                       <ShoppingBag className="h-3.5 w-3.5" /> {customer.totalOrders} {t('orders.title')}
                     </div>
+                    {isAdmin && (
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <Building2 className="h-3.5 w-3.5" /> {getBranchName(customer.branchId)}
+                      </div>
+                    )}
                   </div>
                   <div className="mt-4 pt-3 border-t flex items-center justify-between">
                     <span className="text-xs text-muted-foreground">{t('customers.lastVisit')}: {customer.lastVisit}</span>

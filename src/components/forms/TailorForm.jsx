@@ -6,10 +6,15 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
-import { FormModal, FormField, FormGrid } from '@/components/forms/FormComponents'
+import { FormModal, FormField, FormGrid, SelectField } from '@/components/forms/FormComponents'
+import { useAuth } from '@/context/AuthContext'
+import { useBranchScope } from '@/hooks/useBranchScope'
 
-export function TailorForm({ open, onOpenChange }) {
+export function TailorForm({ open, onOpenChange, tailor, onSave }) {
   const { t } = useTranslation()
+  const isEdit = Boolean(tailor)
+  const { isAdmin } = useAuth()
+  const { branchOptions, branchId } = useBranchScope()
 
   const schema = z.object({
     name: z.string().min(2, t('forms.errors.required')),
@@ -18,21 +23,36 @@ export function TailorForm({ open, onOpenChange }) {
     pieceRate: z.coerce.number().min(1, t('forms.errors.number')),
     dailyWage: z.coerce.number().min(1, t('forms.errors.number')),
     monthlyWage: z.coerce.number().min(1, t('forms.errors.number')),
+    ...(isAdmin ? { branchId: z.string().min(1, t('forms.errors.required')) } : {}),
   })
+
+  const defaultValues = {
+    name: tailor?.name || '',
+    specialization: tailor?.specialization || '',
+    dailyProduction: tailor?.dailyProduction || '',
+    pieceRate: tailor?.pieceRate || '',
+    dailyWage: tailor?.dailyWage || '',
+    monthlyWage: tailor?.monthlyWage || '',
+    branchId: tailor?.branchId ? String(tailor.branchId) : '',
+  }
 
   const {
     register,
     handleSubmit,
     reset,
+    control,
     formState: { errors, isSubmitting },
-  } = useForm({ resolver: zodResolver(schema), mode: 'onTouched' })
+  } = useForm({ resolver: zodResolver(schema), mode: 'onTouched', defaultValues })
 
   useEffect(() => {
-    if (open) reset()
-  }, [open, reset])
+    if (open) reset(defaultValues)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, reset, tailor])
 
-  const onSubmit = () => {
-    toast.success(t('forms.tailorAdded'))
+  const onSubmit = (data) => {
+    const branch = isAdmin ? Number(data.branchId) : branchId
+    onSave?.({ ...data, branchId: branch ?? null })
+    toast.success(isEdit ? t('forms.tailorUpdated') : t('forms.tailorAdded'))
     onOpenChange(false)
   }
 
@@ -95,6 +115,18 @@ export function TailorForm({ open, onOpenChange }) {
             <Input id="tailor-monthly" type="number" min="0" step="100" {...register('monthlyWage')} placeholder="45000" />
           </FormField>
         </FormGrid>
+
+        {isAdmin && (
+          <SelectField
+            control={control}
+            name="branchId"
+            label={t('forms.branch')}
+            required
+            placeholder={t('branches.selectBranch')}
+            options={branchOptions}
+            error={errors.branchId?.message}
+          />
+        )}
       </form>
     </FormModal>
   )

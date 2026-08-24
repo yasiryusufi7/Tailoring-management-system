@@ -6,17 +6,22 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/Button'
 import { Input, Textarea } from '@/components/ui/Input'
-import { FormModal, FormField, FormGrid } from '@/components/forms/FormComponents'
+import { FormModal, FormField, FormGrid, SelectField } from '@/components/forms/FormComponents'
+import { useAuth } from '@/context/AuthContext'
+import { useBranchScope } from '@/hooks/useBranchScope'
 
 export function CustomerForm({ open, onOpenChange, customer, onSave }) {
   const { t } = useTranslation()
   const isEdit = Boolean(customer)
+  const { isAdmin } = useAuth()
+  const { branchOptions, branchId } = useBranchScope()
 
   const schema = z.object({
     name: z.string().min(2, t('forms.errors.required')),
     phone: z.string().min(5, t('forms.errors.phone')),
     email: z.string().email(t('forms.errors.email')),
     address: z.string().min(3, t('forms.errors.required')),
+    ...(isAdmin ? { branchId: z.string().min(1, t('forms.errors.required')) } : {}),
     notes: z.string().optional(),
   })
 
@@ -25,6 +30,7 @@ export function CustomerForm({ open, onOpenChange, customer, onSave }) {
     phone: customer?.phone || '',
     email: customer?.email || '',
     address: customer?.address || '',
+    branchId: customer?.branchId ? String(customer.branchId) : '',
     notes: customer?.notes || '',
   }
 
@@ -32,6 +38,7 @@ export function CustomerForm({ open, onOpenChange, customer, onSave }) {
     register,
     handleSubmit,
     reset,
+    control,
     formState: { errors, isSubmitting },
   } = useForm({ resolver: zodResolver(schema), mode: 'onTouched', defaultValues })
 
@@ -41,7 +48,8 @@ export function CustomerForm({ open, onOpenChange, customer, onSave }) {
   }, [open, reset, customer])
 
   const onSubmit = (data) => {
-    onSave?.(data)
+    const branch = isAdmin ? Number(data.branchId) : branchId
+    onSave?.({ ...data, branchId: branch ?? null })
     toast.success(isEdit ? t('forms.customerUpdated') : t('forms.customerAdded'))
     onOpenChange(false)
   }
@@ -80,6 +88,18 @@ export function CustomerForm({ open, onOpenChange, customer, onSave }) {
         <FormField label={t('customers.address')} htmlFor="customer-address" required error={errors.address?.message}>
           <Input id="customer-address" {...register('address')} placeholder={t('forms.placeholders.address')} />
         </FormField>
+
+        {isAdmin && (
+          <SelectField
+            control={control}
+            name="branchId"
+            label={t('forms.branch')}
+            required
+            placeholder={t('branches.selectBranch')}
+            options={branchOptions}
+            error={errors.branchId?.message}
+          />
+        )}
 
         <FormField label={t('forms.notes')} htmlFor="customer-notes" error={errors.notes?.message}>
           <Textarea id="customer-notes" {...register('notes')} placeholder={t('forms.placeholders.notes')} />

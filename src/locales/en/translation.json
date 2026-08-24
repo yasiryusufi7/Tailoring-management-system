@@ -255,7 +255,8 @@
     "workloadChart": "Workload & Output (Live)",
     "workload": "Current Workload",
     "backlog": "~{{count}}d of work queued",
-    "noWork": "No work queued"
+    "noWork": "No work queued",
+    "search": "Search tailors..."
   },
   "inventory": {
     "title": "Fabric Inventory",
@@ -571,7 +572,9 @@
     "fabricAdded": "Fabric added successfully",
     "supplierAdded": "Supplier added successfully",
     "userAdded": "User added successfully",
-    "invoiceCreated": "Invoice created successfully"
+    "invoiceCreated": "Invoice created successfully",
+    "branch": "Branch",
+    "tailorUpdated": "Tailor updated successfully"
   },
   "common": {
     "search": "Search",

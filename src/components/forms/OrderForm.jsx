@@ -9,12 +9,14 @@ import { Input, Textarea } from '@/components/ui/Input'
 import { FormModal, FormField, SelectField, FormGrid } from '@/components/forms/FormComponents'
 import { customers, tailors } from '@/data/mockData'
 import { useBranchScope } from '@/hooks/useBranchScope'
+import { useAuth } from '@/context/AuthContext'
 
 const orderPriorities = ['high', 'medium', 'low']
 
 export function OrderForm({ open, onOpenChange, onSave }) {
   const { t } = useTranslation()
-  const { scoped } = useBranchScope()
+  const { scoped, branchOptions, branchId } = useBranchScope()
+  const { isAdmin } = useAuth()
   const branchCustomers = scoped(customers)
   const branchTailors = scoped(tailors)
 
@@ -25,6 +27,7 @@ export function OrderForm({ open, onOpenChange, onSave }) {
     amount: z.coerce.number().min(1, t('forms.errors.number')),
     priority: z.string().min(1, t('forms.errors.required')),
     deliveryDate: z.string().min(1, t('forms.errors.required')),
+    ...(isAdmin ? { branchId: z.string().min(1, t('forms.errors.required')) } : {}),
     notes: z.string().optional(),
   })
 
@@ -50,6 +53,7 @@ export function OrderForm({ open, onOpenChange, onSave }) {
       priority: data.priority,
       amount: data.amount,
       deliveryDate: data.deliveryDate,
+      branchId: (isAdmin ? Number(data.branchId) : branchId) ?? null,
       notes: data.notes || '',
       createdAt: new Date().toISOString().slice(0, 10),
     }
@@ -96,6 +100,17 @@ export function OrderForm({ open, onOpenChange, onSave }) {
             options={branchTailors.map((tl) => ({ value: String(tl.id), label: tl.name }))}
             error={errors.tailorId?.message}
           />
+          {isAdmin && (
+            <SelectField
+              control={control}
+              name="branchId"
+              label={t('forms.branch')}
+              required
+              placeholder={t('branches.selectBranch')}
+              options={branchOptions}
+              error={errors.branchId?.message}
+            />
+          )}
         </FormGrid>
 
         <FormGrid>

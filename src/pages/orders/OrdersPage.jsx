@@ -11,7 +11,8 @@ import { DataTable } from '@/components/common/DataTable'
 import { OrderForm } from '@/components/forms/OrderForm'
 import { OrderBillModal } from '@/components/common/OrderBillModal'
 import { useBranchScope } from '@/hooks/useBranchScope'
-import { customers as seedCustomers, tailors as seedTailors } from '@/data/mockData'
+import { customers as seedCustomers, tailors as seedTailors, branches } from '@/data/mockData'
+import { useAuth } from '@/context/AuthContext'
 import { useOrders, addOrder } from '@/data/orderStore'
 
 const statusConfig = {
@@ -119,6 +120,7 @@ function KanbanColumn({ status, orders: columnOrders, index, customers, tailors 
 export function OrdersPage() {
   const { t } = useTranslation()
   const { scoped, branchId } = useBranchScope()
+  const { isAdmin } = useAuth()
   const allOrders = useOrders()
   const orders = scoped(allOrders)
   const customers = scoped(seedCustomers)
@@ -143,13 +145,23 @@ export function OrdersPage() {
   }, [orders, customers, tailors, kanbanSearch])
 
   const handleOrderCreated = (order) => {
-    const fullOrder = { ...order, branchId: branchId || null }
+    const fullOrder = { ...order, branchId: order.branchId ?? branchId ?? null }
     addOrder(fullOrder)
     setBillOrder(fullOrder)
   }
 
   const columns = [
     { key: 'id', label: 'Order', render: (val) => <span className="font-mono font-medium">{val}</span> },
+    ...(isAdmin ? [{
+      key: 'branchId',
+      label: t('forms.branch'),
+      render: (val) => (
+        <Badge variant="outline" className="text-xs">
+          <Building2 className="h-3 w-3 me-1" />
+          {branches.find((b) => b.id === val)?.name || '—'}
+        </Badge>
+      ),
+    }] : []),
     { key: 'type', label: t('orders.type') },
     { key: 'customerId', label: t('orders.customer'), render: (val) => customers.find(c => c.id === val)?.name || '—' },
     { key: 'tailorId', label: t('orders.tailor'), render: (val) => tailors.find(t => t.id === val)?.name || '—' },
