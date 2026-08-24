@@ -1,8 +1,8 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
-import { Scissors, Plus, Star, DollarSign, Clock, TrendingUp } from 'lucide-react'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts'
+import { Scissors, Plus, Star, DollarSign, Clock, TrendingUp, AlertTriangle } from 'lucide-react'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { PageHeader } from '@/components/common/PageHeader'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
@@ -10,16 +10,38 @@ import { Button } from '@/components/ui/Button'
 import { Avatar } from '@/components/ui/Avatar'
 import { TailorForm } from '@/components/forms/TailorForm'
 import { useBranchScope } from '@/hooks/useBranchScope'
+import { useOrders } from '@/data/orderStore'
 import { tailors as seedTailors } from '@/data/mockData'
 
-const CHART_COLORS = ['#6366f1', '#8b5cf6', '#a78bfa', '#c4b5fd', '#ddd6fe']
+const ACTIVE_STATUSES = ['received', 'assigned', 'cutting', 'stitching', 'ironing']
 
 export function TailorsPage() {
   const { t } = useTranslation()
   const { scoped } = useBranchScope()
   const tailors = scoped(seedTailors)
+  const orders = scoped(useOrders())
   const [hoveredId, setHoveredId] = useState(null)
   const [formOpen, setFormOpen] = useState(false)
+
+  const today = new Date().toISOString().slice(0, 10)
+
+  const statsByTailor = useMemo(() => {
+    const map = {}
+    for (const tailor of tailors) {
+      const mine = orders.filter((o) => o.tailorId === tailor.id)
+      const active = mine.filter((o) => ACTIVE_STATUSES.includes(o.status))
+      map[tailor.id] = {
+        active: active.length,
+        ready: mine.filter((o) => o.status === 'ready').length,
+        delivered: mine.filter((o) => o.status === 'delivered').length,
+        overdue: active.filter((o) => o.deliveryDate < today).length,
+        backlogDays: Math.ceil(active.length / (tailor.dailyProduction || 1)),
+      }
+    }
+    return map
+  }, [tailors, orders, today])
+
+  const maxActive = Math.max(1, ...tailors.map((tl) => statsByTailor[tl.id]?.active || 0))
 
   const totalTailors = tailors.length
   const avgDailyProduction = (tailors.reduce((sum, tailor) => sum + tailor.dailyProduction, 0) / tailors.length).toFixed(1)
@@ -28,8 +50,9 @@ export function TailorsPage() {
 
   const chartData = tailors.map((tailor) => ({
     name: tailor.name.split(' ')[0],
-    pieces: tailor.completed,
-    inProgress: tailor.inProgress,
+    active: statsByTailor[tailor.id]?.active || 0,
+    ready: statsByTailor[tailor.id]?.ready || 0,
+    delivered: statsByTailor[tailor.id]?.delivered || 0,
   }))
 
   const stats = [
@@ -112,33 +135,41 @@ export function TailorsPage() {
       >
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-base">{t('tailors.productivity', 'Tailor Productivity Comparison')}</CardTitle>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <CardTitle className="text-base">{t('tailors.workloadChart')}</CardTitle>
+              <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-indigo-500" />{t('tailorWork.activeOrders')}</span>
+                <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-emerald-500" />{t('orders.statuses.ready')}</span>
+                <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-slate-400" />{t('orders.statuses.delivered')}</span>
+              </div>
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={chartData} barCategoryGap="25%">
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.5} />
-                  <XAxis dataKey="name" tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: 'hsl(var(--card))',
-                      border: '1px solid hsl(var(--border))',
-                      borderRadius: '8px',
-                      fontSize: '13px',
-                    }}
-                    cursor={{ fill: 'hsl(var(--muted))', opacity: 0.4 }}
-                  />
-                  <Bar dataKey="pieces" radius={[6, 6, 0, 0]} name="Completed">
-                    {chartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
-                    ))}
-                  </Bar>
-                  <Bar dataKey="inProgress" radius={[6, 6, 0, 0]} fill="#fbbf24" name="In Progress" />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
+            {tailors.length === 0 ? (
+              <p className="py-12 text-center text-muted-foreground">{t('tailors.totalTailors')}: 0</p>
+            ) : (
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={chartData} barCategoryGap="25%">
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.5} vertical={false} />
+                    <XAxis dataKey="name" tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} />
+                    <YAxis allowDecimals={false} tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: 'hsl(var(--card))',
+                        border: '1px solid hsl(var(--border))',
+                        borderRadius: '8px',
+                        fontSize: '13px',
+                      }}
+                      cursor={{ fill: 'hsl(var(--muted))', opacity: 0.4 }}
+                    />
+                    <Bar dataKey="active" name={t('tailorWork.activeOrders')} stackId="w" fill="#6366f1" radius={[0, 0, 0, 0]} />
+                    <Bar dataKey="ready" name={t('orders.statuses.ready')} stackId="w" fill="#10b981" />
+                    <Bar dataKey="delivered" name={t('orders.statuses.delivered')} stackId="w" fill="#94a3b8" radius={[6, 6, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            )}
           </CardContent>
         </Card>
       </motion.div>
@@ -146,7 +177,8 @@ export function TailorsPage() {
       {/* Tailor Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
         {tailors.map((tailor, i) => {
-          const progressPercent = Math.min((tailor.completed / (tailor.completed + 10)) * 100, 100)
+          const stats = statsByTailor[tailor.id] || { active: 0, ready: 0, delivered: 0, overdue: 0, backlogDays: 0 }
+          const workloadPercent = Math.min((stats.active / maxActive) * 100, 100)
           return (
             <motion.div
               key={tailor.id}
@@ -163,9 +195,17 @@ export function TailorsPage() {
                     <div className="flex items-start gap-3.5">
                       <Avatar alt={tailor.name} size="lg" />
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between gap-2">
                           <h3 className="font-semibold text-base truncate">{tailor.name}</h3>
-                          <Badge variant="info" className="text-[10px] shrink-0">{tailor.specialization}</Badge>
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            {stats.overdue > 0 && (
+                              <Badge variant="destructive" className="text-[10px] gap-1">
+                                <AlertTriangle className="h-3 w-3" />
+                                {t('tailorWork.overdue')}
+                              </Badge>
+                            )}
+                            <Badge variant="info" className="text-[10px]">{tailor.specialization}</Badge>
+                          </div>
                         </div>
                         <div className="flex items-center gap-1 mt-1">
                           {renderStars(tailor.rating)}
@@ -210,24 +250,28 @@ export function TailorsPage() {
                     </div>
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-muted-foreground">{t('tailors.completed', 'Completed')}</span>
-                      <span className="font-medium">{tailor.completed} {t('tailors.pieces', 'pieces')}</span>
+                      <span className="font-medium">{stats.delivered} {t('tailors.pieces', 'pieces')}</span>
                     </div>
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-muted-foreground">{t('tailors.inProgress', 'In Progress')}</span>
-                      <Badge variant="secondary" className="text-xs">{tailor.inProgress} {t('tailors.pieces', 'pieces')}</Badge>
+                      <Badge variant="secondary" className="text-xs">{stats.active} {t('tailors.pieces', 'pieces')}</Badge>
                     </div>
 
-                    {/* Progress Bar */}
+                    {/* Workload */}
                     <div className="pt-1">
                       <div className="flex items-center justify-between mb-1.5">
-                        <span className="text-xs font-medium text-muted-foreground">{t('tailors.monthlyProgress', 'Monthly Progress')}</span>
-                        <span className="text-xs font-semibold text-primary">{Math.round(progressPercent)}%</span>
+                        <span className="text-xs font-medium text-muted-foreground">{t('tailors.workload')}</span>
+                        <span className="text-xs font-semibold text-primary">
+                          {stats.active > 0
+                            ? t('tailors.backlog', { count: stats.backlogDays })
+                            : t('tailors.noWork')}
+                        </span>
                       </div>
                       <div className="h-2 bg-muted rounded-full overflow-hidden">
                         <motion.div
-                          className="h-full bg-gradient-to-r from-primary to-violet-500 rounded-full"
+                          className={`h-full rounded-full ${stats.overdue > 0 ? 'bg-gradient-to-r from-red-500 to-amber-500' : 'bg-gradient-to-r from-primary to-violet-500'}`}
                           initial={{ width: 0 }}
-                          animate={{ width: `${progressPercent}%` }}
+                          animate={{ width: `${workloadPercent}%` }}
                           transition={{ delay: 0.6 + i * 0.1, duration: 0.8, ease: 'easeOut' }}
                         />
                       </div>

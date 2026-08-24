@@ -38,12 +38,14 @@ export function AuthProvider({ children }) {
   const value = useMemo(() => {
     const isAdmin = currentUser.role === 'administrator'
     const isManager = currentUser.role === 'manager'
+    const isTailor = currentUser.role === 'tailor'
     return {
       currentUser,
       setCurrentUser,
       updateCurrentUser,
       isAdmin,
       isManager,
+      isTailor,
       scopeBranchId: isAdmin ? null : currentUser.branchId || null,
     }
   }, [currentUser, setCurrentUser, updateCurrentUser])

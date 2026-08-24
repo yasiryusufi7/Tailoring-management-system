@@ -8,19 +8,21 @@ import { Button } from '@/components/ui/Button'
 import { Input, Textarea } from '@/components/ui/Input'
 import { FormModal, FormField, SelectField, FormGrid } from '@/components/forms/FormComponents'
 import { customers, tailors } from '@/data/mockData'
+import { useBranchScope } from '@/hooks/useBranchScope'
 
-const orderStatuses = ['received', 'cutting', 'assigned', 'stitching', 'ironing', 'ready', 'delivered']
 const orderPriorities = ['high', 'medium', 'low']
 
 export function OrderForm({ open, onOpenChange, onSave }) {
   const { t } = useTranslation()
+  const { scoped } = useBranchScope()
+  const branchCustomers = scoped(customers)
+  const branchTailors = scoped(tailors)
 
   const schema = z.object({
     customerId: z.string().min(1, t('forms.errors.required')),
     tailorId: z.string().min(1, t('forms.errors.required')),
     type: z.string().min(2, t('forms.errors.required')),
     amount: z.coerce.number().min(1, t('forms.errors.number')),
-    status: z.string().min(1, t('forms.errors.required')),
     priority: z.string().min(1, t('forms.errors.required')),
     deliveryDate: z.string().min(1, t('forms.errors.required')),
     notes: z.string().optional(),
@@ -44,7 +46,7 @@ export function OrderForm({ open, onOpenChange, onSave }) {
       customerId: Number(data.customerId),
       tailorId: Number(data.tailorId),
       type: data.type,
-      status: data.status,
+      status: 'assigned',
       priority: data.priority,
       amount: data.amount,
       deliveryDate: data.deliveryDate,
@@ -82,7 +84,7 @@ export function OrderForm({ open, onOpenChange, onSave }) {
             label={t('orders.customer')}
             required
             placeholder={t('forms.select')}
-            options={customers.map((c) => ({ value: String(c.id), label: c.name }))}
+            options={branchCustomers.map((c) => ({ value: String(c.id), label: c.name }))}
             error={errors.customerId?.message}
           />
           <SelectField
@@ -91,7 +93,7 @@ export function OrderForm({ open, onOpenChange, onSave }) {
             label={t('orders.tailor')}
             required
             placeholder={t('forms.select')}
-            options={tailors.map((c) => ({ value: String(c.id), label: c.name }))}
+            options={branchTailors.map((tl) => ({ value: String(tl.id), label: tl.name }))}
             error={errors.tailorId?.message}
           />
         </FormGrid>
@@ -108,15 +110,6 @@ export function OrderForm({ open, onOpenChange, onSave }) {
         <FormGrid>
           <SelectField
             control={control}
-            name="status"
-            label={t('forms.status')}
-            required
-            placeholder={t('forms.select')}
-            options={orderStatuses.map((s) => ({ value: s, label: t(`orders.statuses.${s}`) }))}
-            error={errors.status?.message}
-          />
-          <SelectField
-            control={control}
             name="priority"
             label={t('orders.priority')}
             required
@@ -124,11 +117,10 @@ export function OrderForm({ open, onOpenChange, onSave }) {
             options={orderPriorities.map((p) => ({ value: p, label: t(`orders.${p}`) }))}
             error={errors.priority?.message}
           />
+          <FormField label={t('orders.deliveryDate')} htmlFor="order-delivery" required error={errors.deliveryDate?.message}>
+            <Input id="order-delivery" type="date" {...register('deliveryDate')} />
+          </FormField>
         </FormGrid>
-
-        <FormField label={t('orders.deliveryDate')} htmlFor="order-delivery" required error={errors.deliveryDate?.message}>
-          <Input id="order-delivery" type="date" {...register('deliveryDate')} />
-        </FormField>
 
         <FormField label={t('forms.notes')} htmlFor="order-notes" error={errors.notes?.message}>
           <Textarea id="order-notes" {...register('notes')} placeholder={t('forms.placeholders.orderNotes')} />

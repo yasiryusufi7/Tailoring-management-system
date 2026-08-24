@@ -19,6 +19,7 @@ import { BackupPage } from '@/pages/backup/BackupPage'
 import { AuditLogsPage } from '@/pages/audit-logs/AuditLogsPage'
 import { ProfilePage } from '@/pages/profile/ProfilePage'
 import { CustomerTrackingPage } from '@/pages/customers/CustomerTrackingPage'
+import { TailorWorkPage } from '@/pages/tailor/TailorWorkPage'
 
 export const router = createBrowserRouter([
   {
@@ -33,6 +34,7 @@ export const router = createBrowserRouter([
       { path: 'customers', element: <CustomersPage /> },
       { path: 'measurements', element: <MeasurementsPage /> },
       { path: 'orders', element: <OrdersPage /> },
+      { path: 'my-work', element: <TailorWorkPage /> },
       { path: 'tailors', element: <TailorsPage /> },
       { path: 'inventory', element: <FabricInventoryPage /> },
       { path: 'suppliers', element: <SuppliersPage /> },

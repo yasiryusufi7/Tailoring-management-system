@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Ruler, Plus, User, Calendar, Clock, GitCompare, ChevronDown, ChevronUp, Search, Filter, ArrowUpDown, ArrowUp, ArrowDown, RotateCcw, Pencil } from 'lucide-react'
+import { Ruler, Plus, User, Calendar, Clock, Check, ChevronDown, ChevronUp, Search, ArrowUpDown, ArrowUp, ArrowDown, RotateCcw, Pencil } from 'lucide-react'
 import { PageHeader } from '@/components/common/PageHeader'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
@@ -70,10 +70,11 @@ export function MeasurementsPage() {
   const [historyDateTo, setHistoryDateTo] = useState('')
   const [historySortField, setHistorySortField] = useState('date')
   const [historySortDir, setHistorySortDir] = useState('desc')
-  const [comparisonSelected, setComparisonSelected] = useState([])
   const [formOpen, setFormOpen] = useState(false)
   const [updateOpen, setUpdateOpen] = useState(false)
   const [updateMeasurement, setUpdateMeasurement] = useState(null)
+  const [customerQuery, setCustomerQuery] = useState('')
+  const [pickerOpen, setPickerOpen] = useState(false)
 
   const handleSaveMeasurement = (data) => {
     const { measuredBy, date, units, notes, ...body } = data
@@ -97,6 +98,13 @@ export function MeasurementsPage() {
 
   const getCustomerName = (id) => customers.find((c) => c.id === id)?.name || t('common.unknown')
   const getCustomer = (id) => customers.find((c) => c.id === id)
+
+  const pickerResults = useMemo(() => {
+    const q = customerQuery.trim().toLowerCase()
+    if (!q) return measurements
+    return measurements.filter((m) => getCustomerName(m.customerId).toLowerCase().includes(q))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [customerQuery, measurements, customers])
 
   const measuredByOptions = useMemo(() => {
     const names = [...new Set(measurements.map((m) => m.measuredBy))]
@@ -158,17 +166,6 @@ export function MeasurementsPage() {
     return result
   }, [historySearch, historyCustomer, historyMeasuredBy, historyDateFrom, historyDateTo, historySortField, historySortDir, measurements])
 
-  const toggleComparison = (id) => {
-    setComparisonSelected((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : prev.length < 4 ? [...prev, id] : prev
-    )
-  }
-
-  const comparisonMeasurements = useMemo(() => {
-    if (comparisonSelected.length === 0) return measurements
-    return measurements.filter((m) => comparisonSelected.includes(m.id))
-  }, [comparisonSelected, measurements])
-
   const hasActiveFilters = historySearch || historyMeasuredBy !== 'all' || historyCustomer !== 'all' || historyDateFrom || historyDateTo
 
   const resetHistoryFilters = () => {
@@ -195,31 +192,52 @@ export function MeasurementsPage() {
         <TabsList>
           <TabsTrigger value="current">{t('measurements.current')}</TabsTrigger>
           <TabsTrigger value="history">{t('measurements.historyTab')}</TabsTrigger>
-          <TabsTrigger value="comparison">{t('measurements.comparison')}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="current" className="space-y-6">
-          {/* Customer Selection */}
-          <div className="flex flex-wrap gap-3">
-            {measurements.map((m) => (
-              <motion.button
-                key={m.id}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => setSelectedMeasurement(m)}
-                className={`flex items-center gap-2.5 rounded-xl border px-4 py-2.5 transition-all duration-200 ${
-                  selectedMeasurement.id === m.id
-                    ? 'border-primary bg-primary/5 shadow-sm ring-1 ring-primary/20'
-                    : 'hover:border-primary/30 hover:bg-muted/50'
-                }`}
-              >
-                <Avatar alt={getCustomerName(m.customerId)} size="sm" />
-                <div className="text-start">
-                  <p className="text-sm font-medium">{getCustomerName(m.customerId)}</p>
-                  <p className="text-xs text-muted-foreground">{m.date}</p>
+          {/* Customer Search Picker */}
+          <div
+            className="relative max-w-md"
+            onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) setPickerOpen(false) }}
+          >
+            <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+            <Input
+              value={pickerOpen ? customerQuery : getCustomerName(selectedMeasurement?.customerId)}
+              onChange={(e) => { setCustomerQuery(e.target.value); setPickerOpen(true) }}
+              onFocus={() => setPickerOpen(true)}
+              placeholder={t('measurements.selectCustomer')}
+              className="ps-9 pe-9"
+              autoComplete="off"
+            />
+            <ChevronDown className="absolute end-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+            {pickerOpen && (
+              <div className="absolute z-20 top-full mt-2 w-full rounded-xl border bg-popover shadow-xl overflow-hidden">
+                <div className="max-h-64 overflow-y-auto py-1">
+                  {pickerResults.length === 0 ? (
+                    <p className="p-4 text-sm text-muted-foreground text-center">{t('measurements.noCustomersFound')}</p>
+                  ) : pickerResults.map((m) => {
+                    const isSelected = selectedMeasurement?.id === m.id
+                    return (
+                      <button
+                        key={m.id}
+                        type="button"
+                        onClick={() => { setSelectedMeasurement(m); setPickerOpen(false); setCustomerQuery('') }}
+                        className={`flex w-full items-center gap-3 px-3 py-2.5 text-sm transition-colors ${
+                          isSelected ? 'bg-primary/5 text-primary' : 'hover:bg-muted/60'
+                        }`}
+                      >
+                        <Avatar alt={getCustomerName(m.customerId)} size="sm" />
+                        <span className="flex-1 min-w-0 text-start font-medium truncate">
+                          {getCustomerName(m.customerId)}
+                        </span>
+                        <span className="text-xs text-muted-foreground shrink-0">{m.date}</span>
+                        {isSelected && <Check className="h-4 w-4 shrink-0" />}
+                      </button>
+                    )
+                  })}
                 </div>
-              </motion.button>
-            ))}
+              </div>
+            )}
           </div>
 
           {/* Measurement Details */}
@@ -521,76 +539,6 @@ export function MeasurementsPage() {
               )
             })
           )}
-        </TabsContent>
-
-        <TabsContent value="comparison" className="space-y-4">
-          {/* Customer picker for comparison */}
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex flex-wrap items-center gap-3">
-                <span className="text-sm font-medium">{t('measurements.compare')}</span>
-                {measurements.map((m) => (
-                  <button
-                    key={m.id}
-                    onClick={() => toggleComparison(m.id)}
-                    className={`flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm transition-all ${
-                      comparisonSelected.includes(m.id)
-                        ? 'border-primary bg-primary/10 text-primary font-medium'
-                        : comparisonSelected.length >= 4
-                        ? 'opacity-40 cursor-not-allowed'
-                        : 'hover:border-primary/40 hover:bg-muted/50'
-                    }`}
-                    disabled={comparisonSelected.length >= 4 && !comparisonSelected.includes(m.id)}
-                  >
-                    <Avatar alt={getCustomerName(m.customerId)} size="xs" />
-                    {getCustomerName(m.customerId)}
-                  </button>
-                ))}
-                {comparisonSelected.length > 0 && (
-                  <Button variant="ghost" size="sm" onClick={() => setComparisonSelected([])}>
-                    <RotateCcw className="h-3.5 w-3.5 me-1" /> {t('measurements.clear')}
-                  </Button>
-                )}
-                <Badge variant="secondary" className="ms-auto text-xs">
-                  {comparisonSelected.length === 0 ? t('measurements.showingAll') : t('measurements.selected', { count: comparisonSelected.length })}
-                </Badge>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="h-10 text-start text-xs font-semibold uppercase text-muted-foreground">{t('measurements.measurement')}</th>
-                      {comparisonMeasurements.map((m) => (
-                        <th key={m.id} className="h-10 text-center text-xs font-semibold uppercase text-muted-foreground">
-                          <div className="flex flex-col items-center">
-                            <span>{getCustomerName(m.customerId)}</span>
-                            <span className="font-normal normal-case">{m.date}</span>
-                          </div>
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {measurementFields.map((field, i) => (
-                      <tr key={field.key} className="border-b last:border-0 hover:bg-muted/30">
-                        <td className="h-10 text-sm font-medium capitalize">{field.key}</td>
-                        {comparisonMeasurements.map((m) => (
-                          <td key={m.id} className="h-10 text-center text-sm font-medium">
-                            {m.data[field.key]}
-                          </td>
-                        ))}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </CardContent>
-          </Card>
         </TabsContent>
       </Tabs>
 

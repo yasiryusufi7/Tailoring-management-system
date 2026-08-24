@@ -8,11 +8,15 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { FormModal, FormField, SelectField, FormGrid } from '@/components/forms/FormComponents'
 import { customers, orders } from '@/data/mockData'
+import { useBranchScope } from '@/hooks/useBranchScope'
 
 const invoiceStatuses = ['unpaid', 'paid', 'overdue']
 
 export function InvoiceForm({ open, onOpenChange }) {
   const { t } = useTranslation()
+  const { scoped } = useBranchScope()
+  const branchCustomers = scoped(customers)
+  const branchOrders = scoped(orders)
 
   const schema = z.object({
     customerId: z.string().min(1, t('forms.errors.required')),
@@ -66,7 +70,7 @@ export function InvoiceForm({ open, onOpenChange }) {
             label={t('invoices.customer')}
             required
             placeholder={t('forms.select')}
-            options={customers.map((c) => ({ value: String(c.id), label: c.name }))}
+            options={branchCustomers.map((c) => ({ value: String(c.id), label: c.name }))}
             error={errors.customerId?.message}
           />
           <SelectField
@@ -75,7 +79,7 @@ export function InvoiceForm({ open, onOpenChange }) {
             label={t('invoices.order')}
             required
             placeholder={t('forms.select')}
-            options={orders.map((o) => ({ value: o.id, label: `${o.id} — ${o.type}` }))}
+            options={branchOrders.map((o) => ({ value: o.id, label: `${o.id} — ${o.type}` }))}
             error={errors.orderId?.message}
           />
         </FormGrid>

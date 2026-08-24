@@ -11,12 +11,13 @@ import { useAuth } from '@/context/AuthContext'
 import { cn } from '@/lib/utils'
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/Tooltip'
 
-const menuItems = [
+export const menuItems = [
   { key: 'dashboard', path: '/', icon: LayoutDashboard, roles: ['administrator', 'manager'] },
+  { key: 'myWork', path: '/my-work', icon: Scissors, roles: ['tailor'] },
   { key: 'customers', path: '/customers', icon: Users, roles: ['administrator', 'manager'] },
   { key: 'measurements', path: '/measurements', icon: Ruler, roles: ['administrator', 'manager'] },
   { key: 'orders', path: '/orders', icon: ShoppingBag, roles: ['administrator', 'manager'] },
-  { key: 'tailors', path: '/tailors', icon: Scissors, roles: ['administrator', 'manager'] },
+  { key: 'tailors', path: '/tailors', icon: ScissorsIcon, roles: ['administrator', 'manager'] },
   { key: 'inventory', path: '/inventory', icon: Package, roles: ['administrator', 'manager'] },
   { key: 'suppliers', path: '/suppliers', icon: Truck, roles: ['administrator', 'manager'] },
   { type: 'divider' },
@@ -26,9 +27,9 @@ const menuItems = [
   { key: 'branches', path: '/branches', icon: Building2, roles: ['administrator'] },
   { key: 'managers', path: '/managers', icon: UserCog, roles: ['administrator'] },
   { type: 'divider' },
-  { key: 'notifications', path: '/notifications', icon: Bell, roles: ['administrator', 'manager'] },
+  { key: 'notifications', path: '/notifications', icon: Bell, roles: ['administrator', 'manager', 'tailor'] },
   { type: 'divider' },
-  { key: 'settings', path: '/settings', icon: Settings, roles: ['administrator', 'manager'] },
+  { key: 'settings', path: '/settings', icon: Settings, roles: ['administrator', 'manager', 'tailor'] },
   { key: 'backup', path: '/backup', icon: Database, roles: ['administrator'] },
   { key: 'auditLogs', path: '/audit-logs', icon: ClipboardList, roles: ['administrator'] },
 ]

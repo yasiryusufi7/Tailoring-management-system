@@ -23,7 +23,8 @@
     "auditLogs": "آڈیٹ لاگز",
     "profile": "پروفائل",
     "logout": "لاگ آؤٹ",
-    "switchUser": "صارف تبدیل کریں"
+    "switchUser": "صارف تبدیل کریں",
+    "myWork": "میرا کام"
   },
   "roles": {
     "title": "کردار اور اجازتیں",
@@ -171,7 +172,6 @@
       "cuff": "کف"
     },
     "history": "ناپ کی تاریخ",
-    "comparison": "موازنہ",
     "units": "اکائیاں",
     "inches": "انچ",
     "centimeters": "سینٹی میٹر",
@@ -186,19 +186,16 @@
     "to": "تک",
     "noResults": "آپ کے فلٹرز سے ملنے والی کوئی پیمائش نہیں",
     "clearFilters": "فلٹرز صاف کریں",
-    "compare": "موازنہ:",
-    "measurement": "پیمائش",
     "search": "نام، تاریخ یا پیمائش کرنے والے سے تلاش کریں...",
     "by": "{{name}} کے ذریعے",
     "allMeasuredBy": "تمام پیمائش کنندگان",
     "reset": "ری سیٹ",
     "found_one": "{{count}} پیمائش ملی",
     "found_other": "{{count}} پیمائشیں ملیں",
-    "showingAll": "سب دکھایا جا رہا ہے",
-    "selected": "{{count}} منتخب",
-    "clear": "صاف کریں",
     "allIn": "تمام پیمائشیں {{units}} میں ہیں",
-    "found": "{{count}} پیمائشیں ملیں"
+    "found": "{{count}} پیمائشیں ملیں",
+    "selectCustomer": "گاہک تلاش کریں اور منتخب کریں...",
+    "noCustomersFound": "کوئی گاہک نہیں ملا"
   },
   "orders": {
     "title": "آرڈرز",
@@ -228,7 +225,8 @@
     "medium": "درمیانہ",
     "low": "کم",
     "order": "آرڈر",
-    "status": "حالت"
+    "status": "حالت",
+    "searchPlaceholder": "آرڈر نمبر، گاہک، درزی، قسم، حالت یا رقم سے تلاش کریں..."
   },
   "tailors": {
     "title": "درزی",
@@ -253,7 +251,11 @@
     "pieces": "ٹکڑے",
     "productivity": "درزی پیداواری موازنہ",
     "totalTailors": "کل درزی",
-    "totalWages": "کل ماھانہ اجرت"
+    "totalWages": "کل ماھانہ اجرت",
+    "workloadChart": "ورک لوڈ اور پیداوار (لائیو)",
+    "workload": "موجودہ ورک لوڈ",
+    "backlog": "تقریباً {{count}} دن کا کام",
+    "noWork": "کوئی کام نہیں"
   },
   "inventory": {
     "title": "کپڑوں کا اسٹاک",
@@ -652,5 +654,25 @@
     "total": "کل رقم",
     "scanToTrack": "آرڈر کی حیثیت ٹریک کرنے کے لیے اسکین کریں",
     "thanks": "ہمارے ساتھ کاروبار کرنے کا شکریہ!"
+  },
+  "tailorWork": {
+    "title": "میرا کام",
+    "subtitle": "آپ کو سونپے گئے آرڈرز اور کام",
+    "activeOrders": "جاری آرڈرز",
+    "dueToday": "آج واپس کریں",
+    "overdue": "تاریخ گزر گئی",
+    "readyPickup": "لینے کے لیے تیار",
+    "noOrders": "آپ کو کوئی آرڈر سونپا نہیں گیا",
+    "noOrdersHint": "دکان کی جانب سے نیا کام یہاں نظر آئے گا۔",
+    "startCutting": "کٹائی شروع کریں",
+    "startStitching": "سلائی شروع کریں",
+    "sendToIroning": "پریس کے لیے بھیجیں",
+    "markReady": "تیار نشان زد کریں",
+    "customerMeasurements": "گاہک کے پیمانے",
+    "call": "کال",
+    "statusUpdated": "{{status}} میں منتقل ہو گیا",
+    "awaitingPickup": "گاہک کے لینے کا انتظار",
+    "upcoming": "آنے والے",
+    "daysLeft": "{{count}} دن باقی"
   }
 }

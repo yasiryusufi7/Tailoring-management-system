@@ -1,13 +1,12 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
-import { ShoppingBag, Plus, GripVertical, Clock, User, Calendar, DollarSign, AlertTriangle, LayoutGrid, List } from 'lucide-react'
+import { ShoppingBag, Plus, GripVertical, Clock, User, Calendar, DollarSign, AlertTriangle, LayoutGrid, List, Search } from 'lucide-react'
 import { PageHeader } from '@/components/common/PageHeader'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { Avatar } from '@/components/ui/Avatar'
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs'
+import { Input } from '@/components/ui/Input'
 import { DataTable } from '@/components/common/DataTable'
 import { OrderForm } from '@/components/forms/OrderForm'
 import { OrderBillModal } from '@/components/common/OrderBillModal'
@@ -124,9 +123,24 @@ export function OrdersPage() {
   const orders = scoped(allOrders)
   const customers = scoped(seedCustomers)
   const tailors = scoped(seedTailors)
-  const [viewType, setViewType] = useState('kanban')
+  const [viewType, setViewType] = useState('list')
   const [formOpen, setFormOpen] = useState(false)
   const [billOrder, setBillOrder] = useState(null)
+  const [kanbanSearch, setKanbanSearch] = useState('')
+
+  const kanbanOrders = useMemo(() => {
+    const q = kanbanSearch.trim().toLowerCase()
+    if (!q) return orders
+    return orders.filter((o) => {
+      const customer = customers.find((c) => c.id === o.customerId)
+      const tailor = tailors.find((tl) => tl.id === o.tailorId)
+      return [
+        o.id, o.type, o.status, o.priority, o.amount,
+        o.deliveryDate, o.createdAt, o.notes,
+        customer?.name, tailor?.name,
+      ].some((v) => v != null && String(v).toLowerCase().includes(q))
+    })
+  }, [orders, customers, tailors, kanbanSearch])
 
   const handleOrderCreated = (order) => {
     const fullOrder = { ...order, branchId: branchId || null }
@@ -160,12 +174,9 @@ export function OrdersPage() {
         breadcrumbs={[t('nav.dashboard'), t('nav.orders')]}
         actions={
           <div className="flex flex-wrap items-center gap-2">
-            <Tabs value={viewType} onValueChange={setViewType}>
-              <TabsList>
-                <TabsTrigger value="kanban"><LayoutGrid className="h-4 w-4 me-1" />{t('orders.kanban')}</TabsTrigger>
-                <TabsTrigger value="list"><List className="h-4 w-4 me-1" />{t('orders.list')}</TabsTrigger>
-              </TabsList>
-            </Tabs>
+            <Button variant="outline" onClick={() => setViewType(viewType === 'list' ? 'kanban' : 'list')}>
+              {viewType === 'list' ? <LayoutGrid className="h-4 w-4" /> : <List className="h-4 w-4" />}
+            </Button>
             <Button onClick={() => setFormOpen(true)}><Plus className="h-4 w-4" />{t('orders.newOrder')}</Button>
           </div>
         }
@@ -190,13 +201,25 @@ export function OrdersPage() {
         })}
       </div>
 
+      {viewType === 'kanban' && (
+        <div className="relative max-w-md">
+          <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            value={kanbanSearch}
+            onChange={(e) => setKanbanSearch(e.target.value)}
+            placeholder={t('orders.searchPlaceholder')}
+            className="ps-9"
+          />
+        </div>
+      )}
+
       {viewType === 'kanban' ? (
         <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-thin">
           {kanbanStatuses.map((status, i) => (
             <KanbanColumn
               key={status}
               status={status}
-              orders={orders.filter((o) => o.status === status)}
+              orders={kanbanOrders.filter((o) => o.status === status)}
               index={i}
               customers={customers}
               tailors={tailors}

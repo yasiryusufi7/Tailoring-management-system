@@ -23,7 +23,8 @@
     "auditLogs": "Audit Logs",
     "profile": "Profile",
     "logout": "Logout",
-    "switchUser": "Switch User"
+    "switchUser": "Switch User",
+    "myWork": "My Work"
   },
   "roles": {
     "title": "Roles & Permissions",
@@ -171,7 +172,6 @@
       "cuff": "Cuff"
     },
     "history": "Measurement History",
-    "comparison": "Comparison View",
     "units": "Units",
     "inches": "Inches",
     "centimeters": "Centimeters",
@@ -186,19 +186,16 @@
     "to": "To",
     "noResults": "No measurements match your filters",
     "clearFilters": "Clear filters",
-    "compare": "Compare:",
-    "measurement": "Measurement",
     "search": "Search by name, date, or measured by...",
     "by": "By {{name}}",
     "allMeasuredBy": "All Measured By",
     "reset": "Reset",
     "found_one": "{{count}} measurement found",
     "found_other": "{{count}} measurements found",
-    "showingAll": "Showing all",
-    "selected": "{{count}} selected",
-    "clear": "Clear",
     "allIn": "All measurements are in {{units}}",
-    "found": "{{count}} measurements found"
+    "found": "{{count}} measurements found",
+    "selectCustomer": "Search and select a customer...",
+    "noCustomersFound": "No customers found"
   },
   "orders": {
     "title": "Orders",
@@ -228,7 +225,8 @@
     "medium": "Medium",
     "low": "Low",
     "order": "Order",
-    "status": "Status"
+    "status": "Status",
+    "searchPlaceholder": "Search by ID, customer, tailor, type, status, amount..."
   },
   "tailors": {
     "title": "Tailors",
@@ -253,7 +251,11 @@
     "pieces": "pieces",
     "productivity": "Tailor Productivity Comparison",
     "totalTailors": "Total Tailors",
-    "totalWages": "Total Monthly Wages"
+    "totalWages": "Total Monthly Wages",
+    "workloadChart": "Workload & Output (Live)",
+    "workload": "Current Workload",
+    "backlog": "~{{count}}d of work queued",
+    "noWork": "No work queued"
   },
   "inventory": {
     "title": "Fabric Inventory",
@@ -652,5 +654,25 @@
     "total": "Total",
     "scanToTrack": "Scan to track your order status",
     "thanks": "Thank you for your business!"
+  },
+  "tailorWork": {
+    "title": "My Work",
+    "subtitle": "Your assigned orders and tasks",
+    "activeOrders": "Active Orders",
+    "dueToday": "Due Today",
+    "overdue": "Overdue",
+    "readyPickup": "Ready for Pickup",
+    "noOrders": "No orders assigned to you",
+    "noOrdersHint": "New assignments from the shop will appear here.",
+    "startCutting": "Start Cutting",
+    "startStitching": "Start Stitching",
+    "sendToIroning": "Send to Ironing",
+    "markReady": "Mark as Ready",
+    "customerMeasurements": "Customer Measurements",
+    "call": "Call",
+    "statusUpdated": "Moved to {{status}}",
+    "awaitingPickup": "Awaiting customer pickup",
+    "upcoming": "Upcoming",
+    "daysLeft": "{{count}} days left"
   }
 }

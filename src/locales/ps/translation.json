@@ -23,7 +23,8 @@
     "auditLogs": "آډیټ لاګونه",
     "profile": "پروفایل",
     "logout": "وتل",
-    "switchUser": "کارن بدل کړئ"
+    "switchUser": "کارن بدل کړئ",
+    "myWork": "زما کار"
   },
   "roles": {
     "title": "نقشې او اجازې",
@@ -171,7 +172,6 @@
       "cuff": "کف"
     },
     "history": "د اندازې تاریخ",
-    "comparison": "په څېر ته",
     "units": "اندازه یې",
     "inches": "انچ",
     "centimeters": "سنتی میتر",
@@ -186,19 +186,16 @@
     "to": "تر",
     "noResults": "ستاسو فلټرونو سره هڼګ اندازه نه ده موندل شوۓ",
     "clearFilters": "فلټرونه پاک کړئ",
-    "compare": "پرتلنه:",
-    "measurement": "اندازه",
     "search": "د نوم، نڼتۓ یا اندازه کونکي له مخۓ لټون...",
     "by": "د {{name}} لخوا",
     "allMeasuredBy": "ټول اندازه کونکي",
     "reset": "بیا تنظیم",
     "found_one": "{{count}} اندازه موندل شوه",
     "found_other": "{{count}} اندازه موندل شوې",
-    "showingAll": "ټول ښودل کیږي",
-    "selected": "{{count}} غوره شوي",
-    "clear": "پاکول",
     "allIn": "ټول اندازه ګانې په {{units}} کې دي",
-    "found": "{{count}} اندازه موندل شوې"
+    "found": "{{count}} اندازه موندل شوې",
+    "selectCustomer": "ګاړیک ولټوئ او غوره کړئ...",
+    "noCustomersFound": "کوم ګاړیک ونه موندل شو"
   },
   "orders": {
     "title": "آرډرز",
@@ -228,7 +225,8 @@
     "medium": "منځنی",
     "low": "کوچنی",
     "order": "آرڈر",
-    "status": "حالت"
+    "status": "حالت",
+    "searchPlaceholder": "د آرډر شمېرې، ګاړیک، درزي، ډول، حالت یا بیه له مخې لټون..."
   },
   "tailors": {
     "title": "درزي",
@@ -253,7 +251,11 @@
     "pieces": "ټوټے",
     "productivity": "د درزیانو د تولید پرتله",
     "totalTailors": "ټول درزیان",
-    "totalWages": "ټول میاشتنی معاش"
+    "totalWages": "ټول میاشتنی معاش",
+    "workloadChart": "کارباری او تولید (ژوندی)",
+    "workload": "اوسنۍ کارباری",
+    "backlog": "د {{count}} ورځو کار",
+    "noWork": "کار نشته"
   },
   "inventory": {
     "title": "د پارچو انوینټري",
@@ -652,5 +654,25 @@
     "total": "ټوله بیه",
     "scanToTrack": "د امر حالت تعقیب لپاره سکین کړئ",
     "thanks": "له تاسو څخه مننه!"
+  },
+  "tailorWork": {
+    "title": "زما کار",
+    "subtitle": "ستاسو ته سپارل شوي کارونه",
+    "activeOrders": "فعال آرډرونه",
+    "dueToday": "نن رسونه",
+    "overdue": "نیټه تېره شوې",
+    "readyPickup": "د اخیستلو لپاره چمتو",
+    "noOrders": "ستاسو ته کوم آرډر سپارل شوی نه دی",
+    "noOrdersHint": "له دوکان څخه نوي کار دلته ښکاري.",
+    "startCutting": "برش پیل کړئ",
+    "startStitching": "خییل پیل کړئ",
+    "sendToIroning": "اتو ته یې ولېږئ",
+    "markReady": "چمتو په نښه کړئ",
+    "customerMeasurements": "د ګاړیک اندازې",
+    "call": "زنګ",
+    "statusUpdated": "{{status}} ته بدل شو",
+    "awaitingPickup": "د پیرودونکي د اخیستلو انتظار",
+    "upcoming": "راتلونکي",
+    "daysLeft": "{{count}} ورځې پاتې"
   }
 }

@@ -128,6 +128,7 @@ export const users = [
   { id: 1, name: 'Admin User', email: 'admin@tailorpro.com', role: 'administrator', status: 'active', lastLogin: '2026-07-28 09:30', branchId: null, phone: '+93 700 123 456', shopName: 'TailorPro Head Office', joined: '2024-01-15' },
   { id: 2, name: 'Herat Manager', email: 'manager.herat@tailorpro.com', role: 'manager', status: 'active', lastLogin: '2026-07-28 08:15', branchId: 2, phone: '+93 701 234 567', shopName: 'Herat Tailoring House', joined: '2026-01-10' },
   { id: 3, name: 'Kabul Manager', email: 'manager.kabul@tailorpro.com', role: 'manager', status: 'active', lastLogin: '2026-07-27 17:00', branchId: 1, phone: '+93 702 345 678', shopName: 'Kabul Fashion Studio', joined: '2026-02-20' },
+  { id: 4, name: 'Gul Ahmad', email: 'gul.ahmad@tailorpro.com', role: 'tailor', tailorId: 1, status: 'active', lastLogin: '2026-07-28 07:45', branchId: 1, phone: '+93 703 456 789', shopName: 'Kabul Fashion Studio', joined: '2024-01-15' },
 ]
 
 export const auditLogs = [

@@ -23,7 +23,8 @@
     "auditLogs": "گزارش‌های حسابرسی",
     "profile": "پروفایل",
     "logout": "خروج",
-    "switchUser": "تغییر کاربر"
+    "switchUser": "تغییر کاربر",
+    "myWork": "کارهای من"
   },
   "roles": {
     "title": "نقش‌ها و دسترسی‌ها",
@@ -171,7 +172,6 @@
       "cuff": "مچ دست"
     },
     "history": "تاریخچه اندازه‌گیری",
-    "comparison": "نمای مقایسه",
     "units": "واحدها",
     "inches": "اینچ",
     "centimeters": "سانتی‌متر",
@@ -186,19 +186,16 @@
     "to": "تا",
     "noResults": "هیچ اندازه‌گیری‌ای با فیلترهای شما مطابقت ندارد",
     "clearFilters": "پاک کردن فیلترها",
-    "compare": "مقایسه:",
-    "measurement": "اندازه‌گیری",
     "search": "جستجو بر اساس نام، تاریخ یا اندازه‌گیرنده...",
     "by": "توسط {{name}}",
     "allMeasuredBy": "همه اندازه‌گیرنده‌ها",
     "reset": "بازنشانی",
     "found_one": "{{count}} اندازه‌گیری یافت شد",
     "found_other": "{{count}} اندازه‌گیری یافت شد",
-    "showingAll": "نمایش همه",
-    "selected": "{{count}} انتخاب شده",
-    "clear": "پاک کردن",
     "allIn": "همه اندازه‌گیری‌ها به {{units}}",
-    "found": "{{count}} اندازه‌گیری یافت شد"
+    "found": "{{count}} اندازه‌گیری یافت شد",
+    "selectCustomer": "جستجو و انتخاب مشتری...",
+    "noCustomersFound": "مشتری یافت نشد"
   },
   "orders": {
     "title": "سفارش‌ها",
@@ -228,7 +225,8 @@
     "medium": "متوسط",
     "low": "کم",
     "order": "سفارش",
-    "status": "وضعیت"
+    "status": "وضعیت",
+    "searchPlaceholder": "جستجو بر اساس شناسه، مشتری، خیاط، نوع، وضعیت یا مبلغ..."
   },
   "tailors": {
     "title": "خیاط‌ها",
@@ -253,7 +251,11 @@
     "pieces": "قطعه",
     "productivity": "مقایسه بهره‌وری خیاطان",
     "totalTailors": "کل خیاطان",
-    "totalWages": "کل دستمزدهای ماهانه"
+    "totalWages": "کل دستمزدهای ماهانه",
+    "workloadChart": "بار کاری و خروجی (زنده)",
+    "workload": "بار کاری فعلی",
+    "backlog": "حدود {{count}} روز کار در صف",
+    "noWork": "کاری در صف نیست"
   },
   "inventory": {
     "title": "موجودی پارچه",
@@ -652,5 +654,25 @@
     "total": "مجموع",
     "scanToTrack": "برای پیگیری وضعیت سفارش اسکن کنید",
     "thanks": "از خرید شما متشکریم!"
+  },
+  "tailorWork": {
+    "title": "کارهای من",
+    "subtitle": "سفارش‌ها و کارهای محول‌شده به شما",
+    "activeOrders": "سفارش‌های فعال",
+    "dueToday": "تحویل امروز",
+    "overdue": "گذشته از موعد",
+    "readyPickup": "آماده تحویل",
+    "noOrders": "هیچ سفارشی به شما محول نشده است",
+    "noOrdersHint": "کارهای جدید از مغازه اینجا نمایش داده می‌شود.",
+    "startCutting": "شروع برش",
+    "startStitching": "شروع دوخت",
+    "sendToIroning": "ارسال برای اتو",
+    "markReady": "علامت‌گذاری به عنوان آماده",
+    "customerMeasurements": "اندازه‌های مشتری",
+    "call": "تماس",
+    "statusUpdated": "به {{status}} منتقل شد",
+    "awaitingPickup": "در انتظار دریافت مشتری",
+    "upcoming": "آینده",
+    "daysLeft": "{{count}} روز باقی"
   }
 }

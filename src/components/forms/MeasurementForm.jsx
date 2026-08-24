@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/Button'
 import { Input, Textarea } from '@/components/ui/Input'
 import { FormModal, FormField, SelectField, FormGrid } from '@/components/forms/FormComponents'
 import { customers, tailors } from '@/data/mockData'
+import { useBranchScope } from '@/hooks/useBranchScope'
 
 const bodyFields = [
   'neck', 'chest', 'waist', 'hip', 'shoulder', 'sleeve',
@@ -16,6 +17,9 @@ const bodyFields = [
 
 export function MeasurementForm({ open, onOpenChange }) {
   const { t } = useTranslation()
+  const { scoped } = useBranchScope()
+  const branchCustomers = scoped(customers)
+  const branchTailors = scoped(tailors)
 
   const schema = z.object({
     customerId: z.string().min(1, t('forms.errors.required')),
@@ -74,7 +78,7 @@ export function MeasurementForm({ open, onOpenChange }) {
             label={t('measurements.customer')}
             required
             placeholder={t('forms.select')}
-            options={customers.map((c) => ({ value: String(c.id), label: c.name }))}
+            options={branchCustomers.map((c) => ({ value: String(c.id), label: c.name }))}
             error={errors.customerId?.message}
           />
           <SelectField
@@ -83,7 +87,7 @@ export function MeasurementForm({ open, onOpenChange }) {
             label={t('measurements.measuredBy')}
             required
             placeholder={t('forms.select')}
-            options={tailors.map((c) => ({ value: c.name, label: c.name }))}
+            options={branchTailors.map((tl) => ({ value: tl.name, label: tl.name }))}
             error={errors.measuredBy?.message}
           />
         </FormGrid>

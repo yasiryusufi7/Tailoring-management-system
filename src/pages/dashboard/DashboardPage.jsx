@@ -13,6 +13,7 @@ import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { PageHeader } from '@/components/common/PageHeader'
 import { OrderForm } from '@/components/forms/OrderForm'
+import { TailorWorkPage } from '@/pages/tailor/TailorWorkPage'
 import { useAuth } from '@/context/AuthContext'
 import { useBranchScope } from '@/hooks/useBranchScope'
 import { orders as seedOrders, recentOrders, notifications, accountingData, tailors as seedTailors, customers as seedCustomers, fabricInventory as seedFabricInventory } from '@/data/mockData'
@@ -35,9 +36,11 @@ const statusColors = {
 export function DashboardPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const { currentUser, isManager } = useAuth()
+  const { currentUser, isManager, isTailor } = useAuth()
   const { scoped } = useBranchScope()
   const [formOpen, setFormOpen] = useState(false)
+
+  if (isTailor) return <TailorWorkPage />
 
   const orders = scoped(seedOrders)
   const tailors = scoped(seedTailors)

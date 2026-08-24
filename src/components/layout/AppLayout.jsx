@@ -1,16 +1,32 @@
-import { Outlet } from 'react-router-dom'
+import { useEffect } from 'react'
+import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
-import { Sidebar } from './Sidebar'
+import { Sidebar, menuItems } from './Sidebar'
 import { Navbar } from './Navbar'
 import { useSidebar } from '@/context/SidebarContext'
+import { useAuth } from '@/context/AuthContext'
 import { cn } from '@/lib/utils'
+
+const ALWAYS_ALLOWED = ['/profile']
 
 export function AppLayout() {
   const { collapsed, mobileOpen, closeMobile } = useSidebar()
   const { i18n } = useTranslation()
   const isRTL = i18n.dir() === 'rtl'
   const mobileX = isRTL ? 280 : -280
+  const location = useLocation()
+  const navigate = useNavigate()
+  const { currentUser } = useAuth()
+
+  useEffect(() => {
+    const allowed = menuItems
+      .filter((item) => item.path && item.roles.includes(currentUser.role))
+      .map((item) => item.path)
+    if (!allowed.includes(location.pathname) && !ALWAYS_ALLOWED.includes(location.pathname)) {
+      navigate(allowed[0] ?? '/', { replace: true })
+    }
+  }, [currentUser.role, location.pathname, navigate])
 
   return (
     <div className="min-h-screen bg-background">
