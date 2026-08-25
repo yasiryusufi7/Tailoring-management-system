@@ -7,7 +7,6 @@ import { OrdersPage } from '@/pages/orders/OrdersPage'
 import { TailorsPage } from '@/pages/tailors/TailorsPage'
 import { FabricInventoryPage } from '@/pages/inventory/FabricInventoryPage'
 import { SuppliersPage } from '@/pages/suppliers/SuppliersPage'
-import { AccountingPage } from '@/pages/accounting/AccountingPage'
 import { InvoicesPage } from '@/pages/invoices/InvoicesPage'
 import { ReportsPage } from '@/pages/reports/ReportsPage'
 import { NotificationsPage } from '@/pages/notifications/NotificationsPage'
@@ -38,7 +37,6 @@ export const router = createBrowserRouter([
       { path: 'tailors', element: <TailorsPage /> },
       { path: 'inventory', element: <FabricInventoryPage /> },
       { path: 'suppliers', element: <SuppliersPage /> },
-      { path: 'accounting', element: <AccountingPage /> },
       { path: 'invoices', element: <InvoicesPage /> },
       { path: 'reports', element: <ReportsPage /> },
       { path: 'notifications', element: <NotificationsPage /> },

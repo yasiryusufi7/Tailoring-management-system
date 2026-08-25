@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   LayoutDashboard, Users, Ruler, ShoppingBag, Scissors, Package,
-  Truck, Calculator, FileText, BarChart3, Bell, Building2,
+  Truck, FileText, BarChart3, Bell, Building2,
   Settings, Database, ClipboardList, LogOut, ChevronLeft, ScissorsIcon, UserCog
 } from 'lucide-react'
 import { useSidebar } from '@/context/SidebarContext'
@@ -21,7 +21,6 @@ export const menuItems = [
   { key: 'inventory', path: '/inventory', icon: Package, roles: ['administrator', 'manager'] },
   { key: 'suppliers', path: '/suppliers', icon: Truck, roles: ['administrator', 'manager'] },
   { type: 'divider' },
-  { key: 'accounting', path: '/accounting', icon: Calculator, roles: ['administrator'] },
   { key: 'invoices', path: '/invoices', icon: FileText, roles: ['administrator'] },
   { key: 'reports', path: '/reports', icon: BarChart3, roles: ['administrator'] },
   { key: 'branches', path: '/branches', icon: Building2, roles: ['administrator'] },
