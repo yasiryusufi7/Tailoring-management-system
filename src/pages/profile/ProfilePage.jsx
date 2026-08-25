@@ -17,7 +17,7 @@ import toast from 'react-hot-toast'
 
 export function ProfilePage() {
   const { t } = useTranslation()
-  const { currentUser, isAdmin, updateCurrentUser } = useAuth()
+  const { currentUser, isAdmin, isTailor, updateCurrentUser } = useAuth()
   const [showPassword, setShowPassword] = useState(false)
 
   const branch = seedBranches.find((b) => b.id === currentUser.branchId)
@@ -58,7 +58,7 @@ export function ProfilePage() {
         field('name', t('profile.fullName'), form.name, t('forms.placeholders.fullName'), true),
         field('email', t('profile.email'), form.email, t('forms.placeholders.email'), true),
         field('phone', t('profile.phone'), form.phone, t('forms.placeholders.phone'), true),
-        field('shopName', t('profile.shopName'), form.shopName, t('profile.shopName'), true),
+        ...(isAdmin ? [field('shopName', t('profile.shopName'), form.shopName, t('profile.shopName'), true)] : []),
       ]
     : [
         field('name', t('profile.fullName'), form.name, t('forms.placeholders.fullName'), false),
@@ -98,8 +98,8 @@ export function ProfilePage() {
                 <h2 className="text-xl font-bold">{currentUser.name}</h2>
                 <p className="text-muted-foreground">{currentUser.email}</p>
                 <div className="flex flex-wrap items-center gap-2 mt-2 justify-center sm:justify-start">
-                  <Badge variant={isAdmin ? 'destructive' : 'purple'}>
-                    {isAdmin ? t('roles.administrator') : t('roles.manager')}
+                  <Badge variant={isAdmin ? 'destructive' : isTailor ? 'purple' : 'info'}>
+                    {t(`roles.${currentUser.role}`)}
                   </Badge>
                   <Badge variant="success">{t('common.active', 'Active')}</Badge>
                   <span className="text-xs text-muted-foreground">
@@ -149,7 +149,7 @@ export function ProfilePage() {
                 ))}
                 <div className="space-y-2">
                   <label className="text-sm font-medium">{t('profile.role')}</label>
-                  <Input value={isAdmin ? t('roles.administrator') : t('roles.manager')} disabled />
+                  <Input value={t(`roles.${currentUser.role}`)} disabled />
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium flex items-center gap-1.5">
