@@ -42,6 +42,7 @@ export function SettingsPage() {
   const { t, i18n } = useTranslation()
   const { theme, setTheme } = useTheme()
   const { currentUser } = useAuth()
+  const isTailor = currentUser.role === 'tailor'
   const savedPrefs = getPrefs(currentUser.id)
 
   const [shopSettings, setShopSettings] = useState(
@@ -150,12 +151,14 @@ export function SettingsPage() {
       />
 
       <motion.div variants={itemVariants}>
-        <Tabs defaultValue="general" className="space-y-6">
+        <Tabs defaultValue={isTailor ? 'appearance' : 'general'} className="space-y-6">
           <TabsList className="h-auto flex-wrap gap-1 p-1.5">
-            <TabsTrigger value="general" className="gap-2">
-              <Store className="h-4 w-4" />
-              {t('settings.general', 'General')}
-            </TabsTrigger>
+            {!isTailor && (
+              <TabsTrigger value="general" className="gap-2">
+                <Store className="h-4 w-4" />
+                {t('settings.general', 'General')}
+              </TabsTrigger>
+            )}
             <TabsTrigger value="appearance" className="gap-2">
               <Palette className="h-4 w-4" />
               {t('settings.appearance', 'Appearance')}
@@ -170,8 +173,9 @@ export function SettingsPage() {
             </TabsTrigger>
           </TabsList>
 
-          {/* General Settings */}
-          <TabsContent value="general">
+          {/* General Settings (shop owners only) */}
+          {!isTailor && (
+            <TabsContent value="general">
             <motion.div variants={itemVariants}>
               <Card>
                 <CardHeader>
@@ -233,7 +237,8 @@ export function SettingsPage() {
                 </CardContent>
               </Card>
             </motion.div>
-          </TabsContent>
+            </TabsContent>
+          )}
 
           {/* Appearance Settings */}
           <TabsContent value="appearance">

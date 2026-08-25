@@ -28,7 +28,6 @@ export const menuItems = [
   { key: 'managers', path: '/managers', icon: UserCog, roles: ['administrator'] },
   { type: 'divider' },
   { key: 'notifications', path: '/notifications', icon: Bell, roles: ['administrator', 'manager', 'tailor'] },
-  { type: 'divider' },
   { key: 'settings', path: '/settings', icon: Settings, roles: ['administrator', 'manager', 'tailor'] },
   { key: 'backup', path: '/backup', icon: Database, roles: ['administrator'] },
   { key: 'auditLogs', path: '/audit-logs', icon: ClipboardList, roles: ['administrator'] },
