@@ -14,7 +14,9 @@ import { Input } from '@/components/ui/Input'
 import { Badge } from '@/components/ui/Badge'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs'
 import { useTheme } from '@/context/ThemeContext'
+import { useAuth } from '@/context/AuthContext'
 import { changeLanguage } from '@/config/i18n'
+import { getPrefs, setPrefs } from '@/data/userPrefsStore'
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -39,28 +41,34 @@ const languages = [
 export function SettingsPage() {
   const { t, i18n } = useTranslation()
   const { theme, setTheme } = useTheme()
+  const { currentUser } = useAuth()
+  const savedPrefs = getPrefs(currentUser.id)
 
-  const [shopSettings, setShopSettings] = useState({
-    shopName: 'TailorPro',
-    address: 'Kabul, Shar-e-Naw, Afghanistan',
-    phone: '+93 700 000 000',
-    email: 'info@tailorpro.com',
-  })
+  const [shopSettings, setShopSettings] = useState(
+    savedPrefs.shop || {
+      shopName: 'TailorPro',
+      address: 'Kabul, Shar-e-Naw, Afghanistan',
+      phone: '+93 700 000 000',
+      email: 'info@tailorpro.com',
+    }
+  )
 
-  const [notifications, setNotifications] = useState({
-    orderUpdates: true,
-    paymentAlerts: true,
-    lowStock: true,
-    deliveryReminders: true,
-    dailyReport: false,
-    weeklyReport: true,
-  })
+  const [notifications, setNotifications] = useState(
+    savedPrefs.notifPrefs || {
+      orderUpdates: true,
+      paymentAlerts: true,
+      lowStock: true,
+      deliveryReminders: true,
+      dailyReport: false,
+      weeklyReport: true,
+    }
+  )
 
   const [security, setSecurity] = useState({
     currentPassword: '',
     newPassword: '',
     confirmPassword: '',
-    twoFactor: false,
+    twoFactor: savedPrefs.twoFactor || false,
   })
 
   const [showPasswords, setShowPasswords] = useState({
@@ -70,6 +78,7 @@ export function SettingsPage() {
   })
 
   const handleShopSave = () => {
+    setPrefs(currentUser.id, { shop: shopSettings })
     toast.success(t('settings.shopSaved', 'Shop settings saved successfully!'))
   }
 
@@ -81,6 +90,7 @@ export function SettingsPage() {
   const handleNotificationToggle = (key) => {
     setNotifications((prev) => {
       const updated = { ...prev, [key]: !prev[key] }
+      setPrefs(currentUser.id, { notifPrefs: updated })
       toast.success(t('settings.notificationsUpdated', 'Notification preferences updated'))
       return updated
     })
@@ -102,6 +112,7 @@ export function SettingsPage() {
   const handleTwoFactorToggle = () => {
     setSecurity((prev) => {
       const updated = { ...prev, twoFactor: !prev.twoFactor }
+      setPrefs(currentUser.id, { twoFactor: updated.twoFactor })
       toast.success(
         updated.twoFactor
           ? t('settings.twoFactorEnabled', 'Two-factor authentication enabled')

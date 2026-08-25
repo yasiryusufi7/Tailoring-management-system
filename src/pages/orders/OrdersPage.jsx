@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
-import { ShoppingBag, Plus, GripVertical, Clock, User, Calendar, DollarSign, AlertTriangle, LayoutGrid, List, Search } from 'lucide-react'
+import { ShoppingBag, Plus, GripVertical, Clock, User, Calendar, DollarSign, AlertTriangle, LayoutGrid, List, Search, Building2 } from 'lucide-react'
 import { PageHeader } from '@/components/common/PageHeader'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'

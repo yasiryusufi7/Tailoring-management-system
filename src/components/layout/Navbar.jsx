@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  Moon, Sun, Globe, Bell, Menu, ChevronDown, User, Settings, LogOut, Building2
+  Moon, Sun, Globe, Bell, Menu, ChevronDown, User, Settings, LogOut, Building2, CheckCheck
 } from 'lucide-react'
 import { useTheme } from '@/context/ThemeContext'
 import { useSidebar } from '@/context/SidebarContext'
@@ -12,7 +12,8 @@ import { changeLanguage } from '@/config/i18n'
 import { Avatar } from '@/components/ui/Avatar'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
-import { notifications, branches, users } from '@/data/mockData'
+import { branches, users } from '@/data/mockData'
+import { useNotifications, notificationsFor, markAsRead, markAllReadFor, notifAge } from '@/data/notificationStore'
 
 export function Navbar() {
   const { t, i18n } = useTranslation()
@@ -20,6 +21,7 @@ export function Navbar() {
   const { toggleMobile } = useSidebar()
   const { currentUser, isManager, setCurrentUser } = useAuth()
   const navigate = useNavigate()
+  useNotifications()
   const [searchOpen, setSearchOpen] = useState(false)
   const [langOpen, setLangOpen] = useState(false)
   const [notifOpen, setNotifOpen] = useState(false)
@@ -28,7 +30,8 @@ export function Navbar() {
   const notifRef = useRef(null)
   const profileRef = useRef(null)
 
-  const unreadCount = notifications.filter((n) => !n.read).length
+  const myNotifs = notificationsFor(currentUser)
+  const unreadCount = myNotifs.filter((n) => !n.read).length
 
   const currentBranch = branches.find((b) => b.id === currentUser.branchId)
 
@@ -156,22 +159,36 @@ export function Navbar() {
               >
                 <div className="flex items-center justify-between p-4 border-b">
                   <h3 className="font-semibold text-sm">{t('nav.notifications')}</h3>
-                  <Badge variant="info">{unreadCount} new</Badge>
+                  <div className="flex items-center gap-1.5">
+                    <Badge variant="info">{unreadCount} {t('notifications.new')}</Badge>
+                    {unreadCount > 0 && (
+                      <Button variant="ghost" size="icon-sm" onClick={() => markAllReadFor(currentUser)} title={t('notifications.markAllRead')}>
+                        <CheckCheck className="h-3.5 w-3.5" />
+                      </Button>
+                    )}
+                  </div>
                 </div>
                 <div className="max-h-80 overflow-y-auto">
-                  {notifications.map((notif) => (
-                    <div
-                      key={notif.id}
-                      className={`flex gap-3 p-4 border-b last:border-0 hover:bg-muted/50 transition-colors cursor-pointer ${!notif.read ? 'bg-primary/5' : ''}`}
-                    >
-                      <div className={`mt-1 h-2 w-2 rounded-full shrink-0 ${notifTypeColors[notif.type]}`} />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium">{notif.title}</p>
-                        <p className="text-xs text-muted-foreground truncate">{notif.message}</p>
-                        <p className="text-xs text-muted-foreground mt-1">{notif.time}</p>
+                  {myNotifs.slice(0, 6).map((notif) => {
+                    const age = notifAge(notif.createdAt)
+                    return (
+                      <div
+                        key={notif.id}
+                        onClick={() => markAsRead(notif.id)}
+                        className={`flex gap-3 p-4 border-b last:border-0 hover:bg-muted/50 transition-colors cursor-pointer ${!notif.read ? 'bg-primary/5' : ''}`}
+                      >
+                        <div className={`mt-1 h-2 w-2 rounded-full shrink-0 ${notifTypeColors[notif.type]}`} />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate">{notif.title}</p>
+                          <p className="text-xs text-muted-foreground truncate">{notif.message}</p>
+                          <p className="text-xs text-muted-foreground mt-1">{t(`notifications.${age.unit}`, { count: age.count })}</p>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    )
+                  })}
+                  {myNotifs.length === 0 && (
+                    <p className="p-6 text-center text-sm text-muted-foreground">{t('notifications.empty')}</p>
+                  )}
                 </div>
                 <div className="p-2 border-t">
                   <button
